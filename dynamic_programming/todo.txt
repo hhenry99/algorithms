@@ -1,3 +1,5 @@
 -Follow Up of the frog jump. Instead of jumping 1 or 2, can jump up to K steps
 
 
+
+Go over ninja training DP
