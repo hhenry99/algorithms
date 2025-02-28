@@ -47,3 +47,41 @@ distances = [
 # Start the recursion
 min_cost, best_clusters = solve(0, k, set(), n, distances)
 min_cost, best_clusters
+
+
+
+//Assume distance is a 2d array, mapping of distances from xi to xn
+
+def compute_cost(n, selected_cluster, distance):
+    total = 0
+    for (i in range n)
+        mincost = 0
+        for (j in range len(slected_cluster))
+            mincost = min(mincost, distance[i][j])
+        
+        total += mincost
+    return total
+
+def find_k_clusters(index, k, selected_cluster, distance):
+    if k == 0:
+        return compute_cost(n, selected_cluster, distance), selected_cluster.copy
+            //we are retuning a copy of the current selection to prevent the original selected cluster from being modified
+
+    if index >= n:
+        return (inf, [])
+
+    #Take
+    selected_cluster.add(index)
+    (cost_take, take) = find_k_clusters(index+1, k-1, selected_cluster, distance)
+    selected_cluster.remove(index)
+
+    #Not Take
+    (cost_not, not_take) = find_k_clusters(index+1, k, selected_cluster, distance)
+
+
+    #Return the minimal cost, along with the selected clusted associated with it
+    If cost_take < cost_not:
+        return (cost_take, take)
+    else:
+        return (cost_not, not_take)
+
