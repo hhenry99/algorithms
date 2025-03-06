@@ -25,3 +25,11 @@
             if x is feasible then
                 solution = solution + x
 ```
+
+## Optimal Merge Pattern
+
+Goal: Total cost of merge is minimize
+--Used for huffman
+[Reference](https://www.youtube.com/watch?v=HHIc5JZyenI)
+
+![alt text](images/mergepattern1.png)
