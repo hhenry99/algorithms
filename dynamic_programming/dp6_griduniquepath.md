@@ -1,8 +1,8 @@
 Problem Statement
-![alt text](image.png)
+![alt text](images/dp6_ps.png)
 
 Pseudocode
-![alt text](image-1.png)
+![alt text](images/dp6_1.png)
 
 TC : 2^(m\*n)
 SC : (m-1) + (n-1)
@@ -12,7 +12,7 @@ Recursion -> DP
 -Apply when overlapping subproblems
 
 With memo implementation
-![alt text](image-2.png)
+![alt text](images/dp6_2.png)
 
 TC : O(m*n)
 SC : O((n-1) + (m-1)) + O(n*m)
@@ -20,7 +20,7 @@ SC : O((n-1) + (m-1)) + O(n*m)
 ---
 
 Tabulation
-![alt text](image-3.png)
+![alt text](images/dp6_3.png)
 
 TC : O(n _ m)
 SC : O(n _ m)

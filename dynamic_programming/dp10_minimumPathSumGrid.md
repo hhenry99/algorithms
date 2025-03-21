@@ -1,6 +1,6 @@
 ### Problem Statement
 
-![alt text](dp10_problemStatement.png)
+![alt text](images/dp10ps.png)
 
 Step before DP
 
