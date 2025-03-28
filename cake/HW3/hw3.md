@@ -1,6 +1,242 @@
-### Hint
+## Problem 1
 
-![alt text](image.png)
+- I affirm that I have not given or received any unauthorized help
+  on this assignment, and that this work is my own.
+
+## Problem 2
+
+- Problem: Given a set of boxes, output an order in which to stack the boxes such that no box gets crushed, or outputs that no such order exists.
+
+- Intuition: Greedy does not approach because the values are not not uniform.
+- Approach: Recursion with memoization
+
+  - Try all different possible way
+  - If there is a success, return true
+
+- Base Case:
+  1. The current_box_weight > previous_box_max_weight: return False #The current box crushes the previous stacked box
+  2. The base_box_weight is execeeded: return False #All boxes are crushed because the maximum weight is exceeded
+  3. Able to stack all boxes: return True
+
+```py
+
+# boxes is a list of tuples: (weight of box, max weight the box can tolerate on top)
+
+def can_stack(prev_box, base_weight, visited, boxes, memo):
+    if base_weight < 0:
+        return False  # Base box is overloaded
+
+    if len(visited) == len(boxes):
+        return True  # All boxes stacked successfully
+
+    if(visited in memo):    #Assume that this will work
+        return False
+
+    for box in boxes:
+        if box not in visited:
+            curr_weight, curr_limit = box
+
+            # Base case 1: current box would crush the previous box
+            if prev_box:
+                prev_weight, prev_limit = prev_box
+                if curr_weight > prev_limit:
+                    continue  # Try next box
+
+            visited.add(box)
+            if can_stack(box, base_weight - curr_weight, visited, boxes):
+                return True
+            visited.remove(box)  # Backtrack
+
+    memo[visited] = False
+    return False
+
+def main(boxes):
+    memo = {}
+
+    for box in boxes:  # Try every box as the base box
+        weight, limit = box
+        visited = set()
+        visited.add(box)
+        if can_stack(prev_box=box, base_weight=limit, visited=visited, boxes=boxes):
+            return True  # Found a valid stacking order
+
+    return False  # No valid stacking order exists
+
+```
+
+#### Run time Analysis: O(n!) //Trying all different combinations of n boxes. Optimize with memoization to make it polynomial O(n^3) The loop in the main function n \* the nested loop within the stacked function n^2.
+
+### Proof of correctness
+
+- Proof By Induction
+
+Base Case:
+
+1. If all boses are used return true.
+2. If the accumulated weights of the stack box, exceeds the base weight capacity return false.
+3. If the current box weight exceeds the previous box weight capacity return false.
+
+All Base cases held and is true.
+
+Inductive Hypothesis:
+
+- Assume that for any k boxes, the algorithm correctly determines whether those k boxes can be stacked
+
+Inductive Step:
+
+- Prove that k+1 boxes, the algorithm correctly determines it can be stacked.
+- The algorithm will first iterate through through each box marking it as the base of the stack. Calling the recursion function stacked().
+  - This stacked() function will then continue to try out all possible combinations, stacking the box at each iteration and checks the base case.
+  - Once all the boxes are stacked, return True ... the answer has been found, else continue recursing and uses one less boxes each time.
+- Since this recursion uses fewer boxes the inductive hypothesis holds true, therefore the algorithm will correctly determine whether k+1 boxes can be stacked.
+
+## Problem 3
+
+- Problem Statement: Give a polynomial time algorithm for finding the sest of meetings with the highest total important scores.
+
+- Intuition:
+
+  - Greedy would not work because the values are not uniformed. E.g. if I was to choose only the meetings with the highest possible score, this would not work because this approach would not always give us the highest total score.
+  - Approach: Recursion with memoization.
+
+    1. First sort the meeting times based on start and end time, for easier computation later on. (n log n)
+       - We want to sort it like this (9am, 10am), (9:30am, 10pm)
+    2. At each meeting we have 2 options
+       - Take: Take the meeting and add the value of the current meeting
+       - Not take: Do not take the meeting
+       - Return the maximum of both choices
+    3. Use memoize to avoid recomputation
+    4. Base Case: if there are no more meeting return 0.
+
+- ## Approach: Recursion
+
+```py
+
+    def helper(i, meetings, arr, result, memo):
+        if(i >= len(meetings)): return 0
+
+        if((i, arr[-1]) in memo): #Memo storing the current meeting and the previous meeting
+            return memo[(i, arr[-1])]
+
+        current_meeting = meetings[i]
+
+        curr_score = calculate_score(current_meeting) #Assume this this function is O(1) and calcuates the score of a meeting
+
+        #Option 1: Take the meeting if its not overlapping with the last one
+        op1 = 0
+        if(arr not empty or current_meeting.startTime >= arr[-1].endTime){
+            arr.append(curr)
+            op1 = helper(i+1, meetings, arr, result) + curr.importance
+            arr.pop() #Backtrack
+        }
+
+        #Option 2: Not take or skip the current meeting
+        op2 = (helper(i+1, meetings, arr, result))
+
+        if(op1 > op2):
+            result.append(meetings[i])
+
+        memo[i, arr[-1]] = max(op1, op2)
+        return memo[i]
+
+    def algo(meetings):
+        meetings.sort() #Sort meetings in increasing order O(nlogn)
+        memo = {}
+        arr = [] # Temporary array
+        result = [] #Store the meetings with the maximum result
+
+        helper(i, meetings, arr, result, memo)
+
+        return result
+```
+
+### RunTime Analysis: O(n^2) //Time is calculate from filling the memo table\*
+
+### Proof of Correctness
+
+- Proof by Induction
+- Base Case: i >= meetings.length
+
+  - There are no more meetings to consider
+  - The function returns 0, which is correct because no meetings remain, therefore there is no score.
+  - Base case holds
+
+- Inductive Hypothesis:
+
+  - Assume that for any subset of k remaining meetings (from i to n), the algorithm computes the max score by selecting non-overlapping subset of meetings.
+
+- Inductive Step:
+  - Proof that the algorithm works for k+1 meeting
+  - The algorithm sorts the meetings in increasing order based on the start, end times.
+  - The algortihm contains a helper function which recursively decides whether to take the meeting or skip the meeting with respect to the base cases.
+  - Both cases the recursive calls are made on smaller subproblem with fewer than k+1 meetings.
+  - By Inductive Hypothesis, the reduced meetings will be correct
+  - The algorithm selects the maximum of the two choice, thus for k+1 meetings, the algo algorithm works for k+1 meeting.
+
+## Problem 4
+
+- Problem Statement: Give a polynomial time algorithm for deciding which flavor to swap from the front to the back when needed that minimizes the number of times you have to run to the back fridge.
+
+- Approach: Greedy
+
+  - Swap function: Search and swap the furthest occurence flavor or the flavor that is never used again. O(n)
+  - Iterate and store all of the occurences of flavor into a dictionary O(n)
+    - "Chocolate: [0,3,5,7]" Chocolate is ordered at timeslot 0, 3, 5, 7
+
+- This is how the swap will work:
+  - We have 2 flavors on display--Chocolate & Vanilla, & here are their associated mapping
+    - Chocolate: [3,5,6]
+    - Vanilla: [4,7]
+    - The swapping of the flavor will be vanilla because it is the next furthest occurrence.
+    - If one of the k flavor is empty, it will be swapped automatically.
+    - O(k) to search through the displayed flavors
+
+```py
+def algo(time, k):
+    dic = map_flavor(time) #Assume this function maps the occurence of flavors
+
+    display = []
+    step = 0
+
+    for i in range(n): #Have up to K flavors to display
+        if time[i] not in display:
+            display.append(time[i])
+            step += 1
+
+        if step == k:
+            break
+
+    step = 0
+    for i in range n, start=k: #start at k and iterate to n:
+        flavor = time[i]
+        dic[flavor].pop(0)  # remove the current occurrence O(1)
+
+        if flavor not in display:
+            swap(display) #assumes the swap function will swap out the further occurence flavor, and removing it from the dictionary
+            step+=1
+
+    return step
+```
+
+- Time complexity: O(n x k) #Nested loop
+
+### Proof of correctness
+
+- Exchange Argument
+
+  - We want to prove that our greedy algorithm will result in the minimum number of swap / steps.
+
+  - Let G be the solution produce by the greedy algorithm
+  - Let O be the solution produce by any other algorithm that is not greedy
+  - Want to show that O can't be better than G
+
+  - Say G and O agree on the first i steps and i' is the step they differ.
+
+  - G swaps flavor f & O swaps flavor f'
+
+  - The number of swaps will not increase because f is needed later than f'
+  - We can say that the other algorithm will only get better swapping each values with G
+  - Thus this algorthim is optimal.
 
 ## Problem 5
 
@@ -55,7 +291,9 @@ def aglo(T1, T2, r1, r2):
 - nested loop : O(n^2)
 - while loop : O(n)
 
-#### Proof of Correctness [TODO]
+#### Proof of Correctness
+
+The algorithm works because its a BFS, just keep expanding the nodes, checking the base case each time.
 
 ### B.
 
@@ -87,6 +325,13 @@ def aglo(T1, T2, r1, r2):
 #### Proof of correctness
 
 ### C.
+
+- Proof by contradiction
+
+- P = the midpoint of the path between the two node is the same.
+- Assume ~P is true = the midpoint of the path between the two node is not the same.
+
+- There is contradiction because if the midpoint is not the same, the diameter between the node is not equal because it can be less than or greater than with a different midpoint.
 
 ## Problem 6
 
